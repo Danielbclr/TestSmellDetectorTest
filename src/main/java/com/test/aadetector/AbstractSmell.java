@@ -28,7 +28,7 @@ public abstract class AbstractSmell {
 	 * an explanation/message
 	 * @return 
 	 */
-	public List<TestSmellDescription> runAnalysis(CompilationUnit testFileCompilationUnit, String testFileName) throws FileNotFoundException {
+	public List<TestSmell> runAnalysis(CompilationUnit testFileCompilationUnit, String testFileName) throws FileNotFoundException {
 		// TODO Auto-generated method stub
 		return null;
 	}

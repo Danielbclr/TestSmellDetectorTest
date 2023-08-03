@@ -26,63 +26,65 @@ public class AbrissTest extends CalculationTestRunner {
         super.setUp();
     }
 
-    
     @Test
     public void random() {
-//        Point p1 = new Point("1", 600.245, 200.729, 0.0, true);
-//        Point p2 = new Point("2", 623.487, 528.371, 0.0, true);
-//        Point p3 = new Point("3", 476.331, 534.228, 0.0, true);
-//        Point p4 = new Point("4", 372.472, 257.326, 0.0, true);
-//
-//        Abriss a = new Abriss(p1, false);
-//        a.removeDAO(CalculationsDataSource.getInstance());
-//
-//        a.getMeasures().add(new Measure(p2, 257.748));
-//        a.getMeasures().add(new Measure(p3, 254.558));
-//        a.getMeasures().add(new Measure(p4, 247.655));
-//
-//        assertThrows(CalculationException e,
-//        		() -> a.compute());
-//
-//        Assert.assertEquals("328.465", this.df3.format(
-//                a.getResults().get(0).getDistance()), () -> "Add assertion message");
-//        Assert.assertEquals("146.7604", this.df4.format(
-//                a.getResults().get(0).getUnknownOrientation()));
-//        Assert.assertEquals("370.2162", this.df4.format(
-//                a.getResults().get(0).getOrientedDirection()));
-//        Assert.assertEquals("-365.7077", this.df4.format(
-//                a.getResults().get(0).getErrAngle() / 10000));
-//        Assert.assertEquals("-1886.876", this.df3.format(
-//                a.getResults().get(0).getErrTrans() / 100));
-//
-//        Assert.assertEquals("355.776", this.df3.format(
-//                a.getResults().get(1).getDistance()));
-//        Assert.assertEquals("122.7943", this.df4.format(
-//                a.getResults().get(1).getUnknownOrientation()));
-//        Assert.assertEquals("367.0262", this.df4.format(
-//                a.getResults().get(1).getOrientedDirection()));
-//        Assert.assertEquals("10.3262", this.df4.format(
-//                a.getResults().get(1).getErrAngle() / 10000));
-//        Assert.assertEquals("57.708", this.df3.format(
-//                a.getResults().get(1).getErrTrans() / 100));
-//
-//        Assert.assertEquals("234.699", this.df3.format(
-//                a.getResults().get(2).getDistance()));
-//        Assert.assertEquals("67.8497", this.df4.format(
-//                a.getResults().get(2).getUnknownOrientation()));
-//        Assert.assertEquals("360.1232", this.df4.format(
-//                a.getResults().get(2).getOrientedDirection()));
-//        Assert.assertEquals("-44.6184", this.df4.format(
-//                a.getResults().get(2).getErrAngle() / 10000));
-//        Assert.assertEquals("-164.492", this.df3.format(
-//                a.getResults().get(2).getErrTrans() / 100));
-//
-//        Assert.assertEquals("112.4682", this.df4.format(
-//                a.getMean()));
-//        Assert.assertEquals("260.6142", this.df4.format(
-//                a.getMSE() / 10000));
-//        Assert.assertEquals("150.4657", this.df4.format(
-//                a.getMeanErrComp() / 10000));
+        Point p1 = new Point("1", 600.245, 200.729, 0.0, true);
+        Point p2 = new Point("2", 623.487, 528.371, 0.0, true);
+        Point p3 = new Point("3", 476.331, 534.228, 0.0, true);
+        Point p4 = new Point("4", 372.472, 257.326, 0.0, true);
+
+        Abriss a = new Abriss(p1, false);
+        a.removeDAO(CalculationsDataSource.getInstance());
+
+        a.getMeasures().add(new Measure(p2, 257.748));
+        a.getMeasures().add(new Measure(p3, 254.558));
+        a.getMeasures().add(new Measure(p4, 247.655));
+
+        try {
+            a.compute();
+        } catch (CalculationException e) {
+            Assert.fail(e.getMessage());
+        }
+
+        Assert.assertEquals("328.465", this.df3.format(
+                a.getResults().get(0).getDistance()));
+        Assert.assertEquals("146.7604", this.df4.format(
+                a.getResults().get(0).getUnknownOrientation()));
+        Assert.assertEquals("370.2162", this.df4.format(
+                a.getResults().get(0).getOrientedDirection()));
+        Assert.assertEquals("-365.7077", this.df4.format(
+                a.getResults().get(0).getErrAngle() / 10000));
+        Assert.assertEquals("-1886.876", this.df3.format(
+                a.getResults().get(0).getErrTrans() / 100));
+
+        Assert.assertEquals("355.776", this.df3.format(
+                a.getResults().get(1).getDistance()));
+        Assert.assertEquals("122.7943", this.df4.format(
+                a.getResults().get(1).getUnknownOrientation()));
+        Assert.assertEquals("367.0262", this.df4.format(
+                a.getResults().get(1).getOrientedDirection()));
+        Assert.assertEquals("10.3262", this.df4.format(
+                a.getResults().get(1).getErrAngle() / 10000));
+        Assert.assertEquals("57.708", this.df3.format(
+                a.getResults().get(1).getErrTrans() / 100));
+
+        Assert.assertEquals("234.699", this.df3.format(
+                a.getResults().get(2).getDistance()));
+        Assert.assertEquals("67.8497", this.df4.format(
+                a.getResults().get(2).getUnknownOrientation()));
+        Assert.assertEquals("360.1232", this.df4.format(
+                a.getResults().get(2).getOrientedDirection()));
+        Assert.assertEquals("-44.6184", this.df4.format(
+                a.getResults().get(2).getErrAngle() / 10000));
+        Assert.assertEquals("-164.492", this.df3.format(
+                a.getResults().get(2).getErrTrans() / 100));
+
+        Assert.assertEquals("112.4682", this.df4.format(
+                a.getMean()));
+        Assert.assertEquals("260.6142", this.df4.format(
+                a.getMSE() / 10000));
+        Assert.assertEquals("150.4657", this.df4.format(
+                a.getMeanErrComp() / 10000));
     }
 
     @Test
@@ -95,8 +97,11 @@ public class AbrissTest extends CalculationTestRunner {
         a.getMeasures().add(new Measure(p45, 0.0, 91.6892, 23.277, 1.63));
         a.getMeasures().add(new Measure(p47, 281.3521, 100.0471, 108.384, 1.63));
 
-        assertThrows(CalculationException e,
-        		() -> a.compute());
+        try {
+            a.compute();
+        } catch (CalculationException e) {
+            Assert.fail(e.getMessage());
+        }
 
         // test intermediate values with point 45
         Assert.assertEquals("233.2405",
@@ -130,8 +135,11 @@ public class AbrissTest extends CalculationTestRunner {
         a.getMeasures().add(new Measure(p45, 0.0, 91.6892, 23.277, 1.63));
         a.getMeasures().add(new Measure(p47, 281.3521, 100.0471, 108.384, 1.63));
 
-        assertThrows(CalculationException e,
-        		() -> a.compute());
+        try {
+            a.compute();
+        } catch (CalculationException e) {
+            Assert.fail(e.getMessage());
+        }
 
         // test intermediate values with point 45
         Assert.assertEquals("233.2405",
@@ -173,8 +181,11 @@ public class AbrissTest extends CalculationTestRunner {
         a.getMeasures().add(new Measure(p9001, 106.3770, 112.4151, 20.890));
         a.getMeasures().add(new Measure(p9002, 216.0699, 97.2887, 20.360));
 
-        assertThrows(CalculationException e,
-        		() -> a.compute());
+        try {
+            a.compute();
+        } catch (CalculationException e) {
+            Assert.fail(e.getMessage());
+        }
 
         // test intermediate values for point 9001
         Assert.assertEquals("399.9012",
@@ -207,8 +218,11 @@ public class AbrissTest extends CalculationTestRunner {
         a.getMeasures().add(new Measure(p9001, 106.3770, 112.4151, 20.890));
         a.getMeasures().add(new Measure(p9004, 215.700, 100.00, 20.00));
 
-        assertThrows(CalculationException e,
-        		() -> a.compute());
+        try {
+            a.compute();
+        } catch (CalculationException e) {
+            Assert.fail(e.getMessage());
+        }
 
         Assert.assertEquals("0.0795", this.df4.format(a.getMean()));
 
@@ -220,8 +234,11 @@ public class AbrissTest extends CalculationTestRunner {
         a.getMeasures().add(new Measure(p9004, 215.700, 100.00, 20.00));
         a.getMeasures().add(new Measure(p9001, 106.3770, 112.4151, 20.890));
 
-        assertThrows(CalculationException e,
-        		() -> a.compute());
+        try {
+            a.compute();
+        } catch (CalculationException e) {
+            Assert.fail(e.getMessage());
+        }
 
         Assert.assertEquals("0.0795", this.df4.format(a.getMean()));
 
@@ -233,8 +250,11 @@ public class AbrissTest extends CalculationTestRunner {
         a.getMeasures().add(new Measure(p9003, 107.000, 100.000, 22.00));
         a.getMeasures().add(new Measure(p9004, 215.700, 100.00, 20.00));
 
-        assertThrows(CalculationException e,
-        		() -> a.compute());
+        try {
+            a.compute();
+        } catch (CalculationException e) {
+            Assert.fail(e.getMessage());
+        }
 
         Assert.assertEquals("0.0795", this.df4.format(a.getMean()));
     }
@@ -250,10 +270,14 @@ public class AbrissTest extends CalculationTestRunner {
         a.getMeasures().add(m1);
         a.getMeasures().add(new Measure(p47, 281.3521, 100.0471, 108.384, 1.63));
 
-        assertThrows(CalculationException e,
-        		() -> {
-        			// simulate a deactivation
-        		});
+        try {
+            // simulate a deactivation
+            a.compute();
+            m1.deactivate();
+            a.compute();
+        } catch (CalculationException e) {
+            Assert.fail(e.getMessage());
+        }
 
         // test intermediate values with point 45
         Assert.assertEquals("233.2405",

@@ -22,8 +22,8 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 public class AssertionRoulette extends AbstractSmell {
 	
-	ArrayList<TestSmellDescription> listTestSmells;
-	TestSmellDescription cadaTestSmell;	
+	List<TestSmell> listTestSmells;
+	TestSmell cadaTestSmell;	
 	private List<SmellyElement> smellyElementList;
 	
 	String className;
@@ -74,10 +74,10 @@ public class AssertionRoulette extends AbstractSmell {
 	 * @return 
 	 */
 	@Override
-	public List<TestSmellDescription> runAnalysis(CompilationUnit testFileCompilationUnit,
+	public List<TestSmell> runAnalysis(CompilationUnit testFileCompilationUnit,
 												  String testFileName) throws FileNotFoundException {
 		
-		listTestSmells = new ArrayList<TestSmellDescription>();
+		listTestSmells = new ArrayList<>();
 		
 		AssertionRoulette.ClassVisitor classVisitor;
 		classVisitor = new AssertionRoulette.ClassVisitor();
@@ -201,18 +201,12 @@ public class AssertionRoulette extends AbstractSmell {
 					
 //					MethodDeclaration methodAux = null;
 //					methodAux = new MethodDeclaration();
-					
-					cadaTestSmell = new TestSmellDescription("Assertion Roulette", 
-															 "Assertion Explanation", 
-															 getFilePath(), getClassName(),
-															 this.testMethod.getElementName() + "()" , 
-															 n.getRange().get().begin.line + "", 
-															 n.getRange().get().begin.line + "", 
-															 n.getRange().get().begin.line, 
-															 n.getRange().get().end.line,
-															 "",
-															 n.getRange().get(),
-															 null);	
+					cadaTestSmell = new TestSmell("Assertion Roulette",
+							this.testMethod.getElementName() + "()" ,
+							n.getRange().get().begin.line, 
+							n.getRange().get().end.line,
+							"Assertion Explanation",
+							"Delete Assertion");
 					listTestSmells.add(cadaTestSmell);
 					String smellLocation;
 					smellLocation = "Classe " + getClassName() + "\n" +
