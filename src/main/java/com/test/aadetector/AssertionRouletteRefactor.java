@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class AssertionRouletteRefactor {
@@ -81,7 +80,7 @@ public class AssertionRouletteRefactor {
     }
     
     public static String addLazyAssertionMessage(int line) {
-    	String filePath = System.getProperty("user.dir") + "\\output.java";
+    	String filePath = System.getProperty("user.dir") + File.separator + "output.java";
 		List<String> code = Util.codeToList(filePath);
 		
 		String codeLine = code.get(line).trim();
@@ -100,7 +99,7 @@ public class AssertionRouletteRefactor {
                 String lazyAssertionMessage = "() -> \"" + lazyMessage + "\"";
                 
                 while(line < code.size()) {
-                	if(codeLine.endsWith(";")){
+                	if(codeLine.contains(";")){
                 		break;
                 	}
                 	else {
@@ -121,6 +120,50 @@ public class AssertionRouletteRefactor {
         } else {
             // If the line doesn't contain an assert call, return it as is
             return Util.listToCode(code);
+        }
+    }
+    
+    public static List<String> refactor(int line) {
+    	String filePath = System.getProperty("user.dir") + File.separator + "output.java";
+		List<String> code = Util.codeToList(filePath);
+		
+		String codeLine = code.get(line).trim();
+		
+        // Check if the line contains an assert call
+        if (codeLine.contains("assert")) {
+            // Check if the line already contains a Lazy Assertion Message
+            if (codeLine.contains("() ->")) {
+                // If the line already has a Lazy Assertion Message, return the line as is
+                return code;
+            } else {
+                // Extract the assertion condition from the line
+            	String lazyMessage = "Add assertion message";
+                
+                // Generate the Lazy Assertion Message
+                String lazyAssertionMessage = "() -> \"" + lazyMessage + "\"";
+                
+                while(line < code.size()) {
+                	if(codeLine.contains(";")){
+                		break;
+                	}
+                	else {
+                		line++;
+                		codeLine = code.get(line).trim();
+                	}
+                }
+                
+                String space = Util.getLeadingSpaces(code.get(line));
+
+                // Add the Lazy Assertion Message to the line
+                String modifiedLine = space + codeLine.substring(0, codeLine.lastIndexOf(")")) + ", " + lazyAssertionMessage + ");";
+                
+                code.set(line, modifiedLine);
+
+                return code;
+            }
+        } else {
+            // If the line doesn't contain an assert call, return it as is
+            return code;
         }
     }
 

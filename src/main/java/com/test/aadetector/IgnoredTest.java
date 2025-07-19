@@ -1,25 +1,20 @@
 package com.test.aadetector;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.swing.JOptionPane;
+
 import com.github.javaparser.Range;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.expr.ConditionalExpr;
-import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.stmt.DoStmt;
-import com.github.javaparser.ast.stmt.ForStmt;
-import com.github.javaparser.ast.stmt.IfStmt;
-import com.github.javaparser.ast.stmt.SwitchStmt;
-import com.github.javaparser.ast.stmt.WhileStmt;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-
-import java.awt.Container;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.JOptionPane;
+import com.google.gson.Gson;
 
 public class IgnoredTest extends AbstractSmell {
 
@@ -171,7 +166,7 @@ public class IgnoredTest extends AbstractSmell {
 	public static void refactor(int line) {
 		
         // Specify the file path of the test file to refactor
-		String filePath = System.getProperty("user.dir") + "\\output.java";
+		String filePath = System.getProperty("user.dir") + File.separator + "output.java";
 
         // Read the test file
         List<String> lines = Util.readFile(filePath);
@@ -182,15 +177,55 @@ public class IgnoredTest extends AbstractSmell {
         	lines.remove(i);
         }
         
+        String space = Util.getLeadingSpaces(lines.get(line - 2));
+        
         lines.remove(line);
         lines.remove(line - 1);
-        lines.remove(line - 2);
+        lines.set(line - 2, space + "// Line removed due to Ignored Test");
 
         String result = Util.listToCode(lines);
         
         Util.writeStringToFile(result);
         
-        System.out.println(result);
+        List<String> response = Arrays.asList(result, Integer.toString(line - 1));
+		
+		Gson gson = new Gson();
+		String json = gson.toJson(response);
+		
+		System.out.println(json);
+        
+	}
+	
+public static void refactorNoPrint(int line) {
+		
+        // Specify the file path of the test file to refactor
+		String filePath = System.getProperty("user.dir") + File.separator + "output.java";
+
+        // Read the test file
+        List<String> lines = Util.readFile(filePath);
+
+        int lineEnd = Util.findClosingBracket(lines, line);
+        
+        for(int i = lineEnd; i >= line; i--) {
+        	lines.remove(i);
+        }
+        
+        String space = Util.getLeadingSpaces(lines.get(line - 2));
+        
+        lines.remove(line);
+        lines.remove(line - 1);
+        lines.set(line - 2, space + "// Line removed due to Ignored Test");
+
+        String result = Util.listToCode(lines);
+        
+        Util.writeStringToFile(result);
+        
+//        List<String> response = Arrays.asList(result, Integer.toString(line - 1));
+//		
+//		Gson gson = new Gson();
+//		String json = gson.toJson(response);
+//		
+//		System.out.println(json);
         
 	}
 }

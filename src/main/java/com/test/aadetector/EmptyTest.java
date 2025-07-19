@@ -1,5 +1,6 @@
 package com.test.aadetector;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -151,7 +152,7 @@ public class EmptyTest extends AbstractSmell {
 
 	public static void refactor(int beginLine) {
 		// Specify the file path of the test file to refactor
-		String filePath = System.getProperty("user.dir") + "\\output.java";
+		String filePath = System.getProperty("user.dir") + File.separator + "output.java";
 
 		// Read the test file
 		List<String> lines = Util.readFile(filePath);
@@ -185,6 +186,44 @@ public class EmptyTest extends AbstractSmell {
 		String json = gson.toJson(response);
 		
 		System.out.println(json);
+	}
+	
+	public static void refactorNoPrint(int beginLine) {
+		// Specify the file path of the test file to refactor
+		String filePath = System.getProperty("user.dir") + File.separator + "output.java";
+
+		// Read the test file
+		List<String> lines = Util.readFile(filePath);
+
+		int endLine = Util.findClosingBracket(lines, beginLine);
+		int commentLine;
+		
+		beginLine--;
+		String leadingSpace = Util.getLeadingSpaces(lines.get(beginLine));
+		if (!lines.get(beginLine - 1).trim().startsWith("//") && !lines.get(beginLine - 1).trim().isEmpty()) {
+			lines.set(beginLine - 1, leadingSpace +  "// Method removed due to Empty Test");
+			commentLine = beginLine - 1;
+		}
+		else {
+			lines.set(beginLine, leadingSpace + "// Method removed due to Empty Test");
+			commentLine = beginLine;
+			beginLine++;
+		}
+
+		for (int i = endLine; i >= beginLine; i--) {
+			lines.remove(i);
+		}
+
+		String result = Util.listToCode(lines);
+
+		Util.writeStringToFile(result);
+//		
+//		List<String> response = Arrays.asList(result, Integer.toString(commentLine));
+//		
+//		Gson gson = new Gson();
+//		String json = gson.toJson(response);
+//		
+//		System.out.println(json);
 	}
 
 }

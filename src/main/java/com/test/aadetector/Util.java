@@ -2,9 +2,12 @@ package com.test.aadetector;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -21,9 +24,10 @@ public class Util {
 		boolean valid = false;
 
 		if (!n.getAnnotationByName("Ignore").isPresent()) {
-			//only analyze methods that either have a @test annotation (Junit 4) or the method name starts with 'test'
+			// only analyze methods that either have a @test annotation (Junit 4) or the
+			// method name starts with 'test'
 			if (n.getAnnotationByName("Test").isPresent() || n.getNameAsString().toLowerCase().startsWith("test")) {
-				//must be a public method
+				// must be a public method
 				if (n.getModifiers().contains(Modifier.publicModifier())) {
 					valid = true;
 				}
@@ -37,9 +41,10 @@ public class Util {
 		boolean valid = false;
 
 		if (!n.getAnnotationByName("Ignore").isPresent()) {
-			//only analyze methods that either have a @Before annotation (Junit 4) or the method name is 'setUp'
+			// only analyze methods that either have a @Before annotation (Junit 4) or the
+			// method name is 'setUp'
 			if (n.getAnnotationByName("Before").isPresent() || n.getNameAsString().equals("setUp")) {
-				//must be a public method
+				// must be a public method
 				if (n.getModifiers().contains(Modifier.publicModifier())) {
 					valid = true;
 				}
@@ -49,13 +54,15 @@ public class Util {
 		return valid;
 	}
 
-	public static boolean isInt(String s)
-	{
-		try
-		{ int i = Integer.parseInt(s); return true; }
+	public static boolean isInt(String s) {
+		try {
+			int i = Integer.parseInt(s);
+			return true;
+		}
 
-		catch(NumberFormatException er)
-		{ return false; }
+		catch (NumberFormatException er) {
+			return false;
+		}
 	}
 
 	public static boolean isNumber(String str) {
@@ -93,7 +100,7 @@ public class Util {
 	}
 
 	public static void writeStringToFile(String content) {
-		String filePath = System.getProperty("user.dir") + "\\output.java";
+		String filePath = System.getProperty("user.dir") + File.separator + "output.java";
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
 			writer.write(content);
 		} catch (IOException e) {
@@ -143,7 +150,8 @@ public class Util {
 		Stack<Character> stack = new Stack<>();
 		int currentIndex = startIndex;
 
-		// Start searching from the startIndex and continue until the end of the codeLines
+		// Start searching from the startIndex and continue until the end of the
+		// codeLines
 		while (currentIndex < codeLines.size()) {
 			String line = codeLines.get(currentIndex);
 
@@ -168,10 +176,10 @@ public class Util {
 		return -1;
 	}
 
-	public static int findMatchingBracket( List<String> codeLines, int line) {
+	public static int findMatchingBracket(List<String> codeLines, int line) {
 		Stack<Character> stack = new Stack<>();
 		for (int index = line; index < codeLines.size(); index++) {
-			for(int i = 0; i < codeLines.get(index).trim().length(); i++) {
+			for (int i = 0; i < codeLines.get(index).trim().length(); i++) {
 				char c = codeLines.get(index).trim().charAt(i);
 				if (c == '(' || c == '{' || c == '[') {
 					stack.push(c);
@@ -194,25 +202,30 @@ public class Util {
 
 	private static char matchingBracket(char c) {
 		switch (c) {
-		case '(': return ')';
-		case '{': return '}';
-		case '[': return ']';
-		default: return '\0';
+		case '(':
+			return ')';
+		case '{':
+			return '}';
+		case '[':
+			return ']';
+		default:
+			return '\0';
 		}
 	}
 
-	private static boolean checkForAsserts( List<String> code, int begin, int end) {
-		for(int i = begin; i < end; i++) {
-			if(code.get(i).trim().startsWith("assert")) {
+	private static boolean checkForAsserts(List<String> code, int begin, int end) {
+		for (int i = begin; i < end; i++) {
+			if (code.get(i).trim().startsWith("assert")) {
 				return true;
 			}
 		}
 		return false;
 	}
-	public static int findEndBracket( List<String> codeLines, int line) {
+
+	public static int findEndBracket(List<String> codeLines, int line) {
 		Stack<Character> stack = new Stack<>();
 		for (int index = line; index < codeLines.size(); index++) {
-			for(int i = 0; i < codeLines.get(index).trim().length(); i++) {
+			for (int i = 0; i < codeLines.get(index).trim().length(); i++) {
 				char c = codeLines.get(index).trim().charAt(i);
 				if (c == '{') {
 					stack.push(c);
@@ -238,7 +251,7 @@ public class Util {
 		for (int i = line_number + 1; i < lines.size(); i++) {
 			open_brackets += lines.get(i).trim().chars().filter(ch -> ch == '{').count();
 			open_brackets -= lines.get(i).trim().chars().filter(ch -> ch == '}').count();
-			if(open_brackets <= 0) {
+			if (open_brackets <= 0) {
 				return i;
 			}
 		}
@@ -254,11 +267,75 @@ public class Util {
 		}
 		return "Unknown";
 	}
-	
+
 	private static String toJson(List<TestSmell> testSmellList) {
 		Gson gson = new Gson();
 		String json = gson.toJson(testSmellList);
 		return json;
 	}
 
+	public static List<String> parseMethodParameters(String methodCall) {
+		List<String> parameters = new ArrayList<>();
+
+		int startIndex = methodCall.indexOf('(');
+		int endIndex = methodCall.lastIndexOf(')');
+
+		if (startIndex != -1 && endIndex != -1 && startIndex < endIndex) {
+			String paramString = methodCall.substring(startIndex + 1, endIndex);
+			String[] paramArray = paramString.split(",");
+
+			for (String param : paramArray) {
+				parameters.add(param.trim());
+			}
+		}
+
+		return parameters;
+	}
+
+	public static Object parseNumber(String input) {
+		try {
+			if (input.contains(".")) {
+				// Parse as double
+				return Double.parseDouble(input);
+			} else {
+				// Try parsing as integer types
+				try {
+					return Integer.parseInt(input);
+				} catch (NumberFormatException e1) {
+					try {
+						return Float.parseFloat(input);
+					} catch (NumberFormatException e5) {
+						try {
+							return Long.parseLong(input);
+						} catch (NumberFormatException e2) {
+							try {
+								return Short.parseShort(input);
+							} catch (NumberFormatException e3) {
+								try {
+									return Byte.parseByte(input);
+								} catch (NumberFormatException e4) {
+									return "";
+								}
+							}
+						}
+					}
+				}
+			}
+		} catch (NumberFormatException e) {
+			return "";
+		}
+	}
+	
+//	public static String getNumberType(String input) {
+//		String type = input.split("\\.")[2];
+//		switch(type) {
+//			case
+//		}
+//	}
+
+	public static String readFileAsString(String filePath) throws IOException {
+        byte[] encodedBytes = Files.readAllBytes(Paths.get(filePath));
+        return new String(encodedBytes);
+    }
+	
 }

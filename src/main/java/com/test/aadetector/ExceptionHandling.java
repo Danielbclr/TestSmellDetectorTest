@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.google.gson.Gson;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -13,7 +14,7 @@ public class ExceptionHandling {
 
 	public static void refactor(int lineNumber) {
 		// Specify the file path of the test file to refactor
-		String filePath = System.getProperty("user.dir") + "\\output.java";
+		String filePath = System.getProperty("user.dir") + File.separator + "output.java";
 
 		// Read the test file
 		List<String> lines = Util.readFile(filePath);
@@ -41,7 +42,7 @@ public class ExceptionHandling {
 			newLines.add(tabSpace + doubleTab + "() -> " + line.substring(0, line.length() - 1) + ");");
 		} else {
 			newLines.add(tabSpace + doubleTab + "() -> {");
-			for(int i = 0; i < tryCatchInfo.catchContent.size(); i++) {
+			for(int i = 0; i < tryCatchInfo.tryContent.size(); i++) {
 				newLines.add(tabSpace + doubleTab + singleTab + tryCatchInfo.tryContent.get(i).trim());
 			}
 			newLines.add(tabSpace + doubleTab + "});");
@@ -68,10 +69,70 @@ public class ExceptionHandling {
 		System.out.println(json);
 		
 	}
+	
+	public static void refactorNoPrint(int lineNumber) {
+		// Specify the file path of the test file to refactor
+		String filePath = System.getProperty("user.dir") + File.separator + "output.java";
+
+		// Read the test file
+		List<String> lines = Util.readFile(filePath);
+		
+//		System.out.println(lines.get(lineNumber));
+
+		TryCatchInfo tryCatchInfo = detectTryCatchInfoOnLine(lines, lineNumber);
+		
+		if(tryCatchInfo == null) {
+			return;
+		}
+		
+		String tabSpace =  Util.getLeadingSpaces(lines.get(lineNumber));
+		String singleTab = "	";
+		String doubleTab = "		";
+		int newEnd = 0;
+		
+		for(int i = tryCatchInfo.endLine - 1; i >= tryCatchInfo.tryStartLine - 1; i--) {
+			lines.remove(i);
+			newEnd--;
+		}
+		
+		List<String> newLines = new ArrayList<>();
+		newLines.add(tabSpace + "assertThrows(" + tryCatchInfo.exception + ",");
+		if(tryCatchInfo.tryContent.size() == 1) {
+			String line = tryCatchInfo.tryContent.get(0).trim();
+			newLines.add(tabSpace + doubleTab + "() -> " + line.substring(0, line.length() - 1) + ");");
+		} else {
+			newLines.add(tabSpace + doubleTab + "() -> {");
+			for(int i = 0; i < tryCatchInfo.tryContent.size(); i++) {
+				newLines.add(tabSpace + doubleTab + singleTab + tryCatchInfo.tryContent.get(i).trim());
+			}
+			newLines.add(tabSpace + doubleTab + "});");
+		}
+		for(int i = 0; i < tryCatchInfo.catchContent.size(); i++) {
+			if(!tryCatchInfo.catchContent.get(i).trim().toLowerCase().startsWith("assert")) {
+				newLines.add(tabSpace + tryCatchInfo.catchContent.get(i).trim());
+			}
+		}
+		
+		newEnd += newLines.size();
+		
+		lines.addAll(lineNumber, newLines);
+		
+		String result = Util.listToCode(lines);
+		
+		Util.writeStringToFile(result);
+		
+//		List<String> response = Arrays.asList(result, Integer.toString(newEnd));
+//		
+//		Gson gson = new Gson();
+//		String json = gson.toJson(response);
+//		
+//		System.out.println(json);
+		
+	}
 
 	public static List<TestSmell> detect() {
 		// Specify the file path of the test file to refactor
-		String filePath = System.getProperty("user.dir") + "\\output.java";
+		String filePath = System.getProperty("user.dir") + File.separator + "output.java";
 
 		// Read the test file
 		List<String> lines = Util.readFile(filePath);
@@ -144,8 +205,11 @@ public class ExceptionHandling {
 				tryContent.add(line);
 			} else if (inCatch) {
 				catchContent.add(line);
-				if (line.toLowerCase().contains("assert") && !line.startsWith("//")) {
+				if (line.toLowerCase().contains("assert") && !line.trim().startsWith("//")) {
 					hasAssert = true;
+				} else {
+					hasAssert = false;
+					
 				}
 			}
 		}

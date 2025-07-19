@@ -1,27 +1,12 @@
 package com.test.aadetector;
 
-import com.github.javaparser.Range;
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.Modifier;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.expr.ConditionalExpr;
-import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.stmt.DoStmt;
-import com.github.javaparser.ast.stmt.ForStmt;
-import com.github.javaparser.ast.stmt.IfStmt;
-import com.github.javaparser.ast.stmt.SwitchStmt;
-import com.github.javaparser.ast.stmt.WhileStmt;
-import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-
-import java.awt.Container;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JOptionPane;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import com.github.javaparser.ast.CompilationUnit;
 
 public class ConstructorInitialization extends AbstractSmell {
 
@@ -81,13 +66,13 @@ public class ConstructorInitialization extends AbstractSmell {
 
 		listTestSmells = new ArrayList<>();
 
-		int constructorPosition = detectConstructorPosition(textContent, detectClassName(textContent));
+		int constructorPosition = detectConstructorPosition(textContent, detectClassName(textContent));	
 		if(constructorPosition != -1) {
 			if(!hasCodeInConstructor(textContent, constructorPosition) || hasSetupMethod(textContent)) {
 				return listTestSmells;
 			}
 			int endPosition = Util.findClosingBracket(textContent, constructorPosition);
-			//System.out.println(endPosition);
+//			System.out.println(endPosition);
 			listTestSmells.add(new TestSmell("Constructor Initialization",
 					detectClassName(textContent) + "() \n" ,
 					constructorPosition + 1, 
@@ -112,7 +97,7 @@ public class ConstructorInitialization extends AbstractSmell {
 	
 	private static boolean hasCodeInConstructor(List<String> code, int position) {
 		int endPosition = Util.getStatementEndIndex(code, position);
-		for(int i = position; i < endPosition; i ++) {
+		for(int i = position + 1; i < endPosition; i ++) {
 			String line = code.get(i).trim();
 			if(!line.startsWith("super") && !line.equals("")) {
 				return true;
@@ -124,7 +109,7 @@ public class ConstructorInitialization extends AbstractSmell {
 	private static boolean hasSetupMethod(List<String> code) {
 		for(int i = 0; i < code.size(); i ++) {
 			String line = code.get(i).trim().toLowerCase();
-			if(line.contains("setup") || !line.startsWith("//")){
+			if(line.contains("setup") && line.startsWith("public")){
 				return true;
 			}
 		}

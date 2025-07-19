@@ -165,7 +165,7 @@ public class AssertionRoulette extends AbstractSmell {
 						|| n.getNameAsString().startsWith(("assertThat"))) {
 					assertCount++;
 					// assert methods that do not contain a message
-					
+
 					if (n.getArguments().size() < 3 || (explanationIsEmpty(n.getArgument(0).toString()))) {
 						assertNoMessageCount++;
 						flag = true;
@@ -192,21 +192,15 @@ public class AssertionRoulette extends AbstractSmell {
 						flag = true;
 					}
 				}
-				if(assertCount <= 1) {
-					flag = false;
-				}
 				if (flag) {
 					// JOptionPane.showMessageDialog(null, "O método " +
 					// this.testMethod.getElementName() + "() apresenta smell");
 					
 //					MethodDeclaration methodAux = null;
 //					methodAux = new MethodDeclaration();
-					cadaTestSmell = new TestSmell("Assertion Roulette",
-							this.testMethod.getElementName() + "()" ,
-							n.getRange().get().begin.line, 
-							n.getRange().get().end.line,
-							"Assertion Explanation",
-							"Delete Assertion");
+					
+					cadaTestSmell = new TestSmell("Assertion Roulette", this.testMethod.getElementName() + "()", n.getRange().get().begin.line, n.getRange().get().end.line, "Add Assertion Explanation", "Refactoring option 2");
+
 					listTestSmells.add(cadaTestSmell);
 					String smellLocation;
 					smellLocation = "Classe " + getClassName() + "\n" +
